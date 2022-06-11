@@ -125,6 +125,16 @@ export const CopyFromDialog = props => {
             }}
           />
           <RegularButton
+            buttonText={"Colors only"}
+            style="outline"
+            size="sm"
+            onClick={() => {
+              const layer = selectedLayer;
+              setSelectedLayer(-1);
+              props.onCopy(layer, /* colorsOnly = */ true);
+            }}
+          />
+          <RegularButton
             buttonText={i18n.dialog.ok}
             style="outline gradient"
             size="sm"

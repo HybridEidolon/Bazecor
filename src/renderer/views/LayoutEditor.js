@@ -781,20 +781,24 @@ class LayoutEditor extends React.Component {
   cancelCopyFrom = () => {
     this.setState({ copyFromOpen: false });
   };
-  copyFromLayer = layer => {
+  copyFromLayer = (layer, colorsOnly) => {
     this.setState(state => {
       let newKeymap, newColormap;
 
-      if (state.keymap.onlyCustom) {
-        newKeymap = layer < 0 ? state.keymap.default.slice() : state.keymap.custom.slice();
-        newKeymap[state.currentLayer] =
-          layer < 0 ? state.keymap.default[layer + state.keymap.default.length].slice() : state.keymap.custom[layer].slice();
+      if (!colorsOnly) {
+        if (state.keymap.onlyCustom) {
+          newKeymap = layer < 0 ? state.keymap.default.slice() : state.keymap.custom.slice();
+          newKeymap[state.currentLayer] =
+            layer < 0 ? state.keymap.default[layer + state.keymap.default.length].slice() : state.keymap.custom[layer].slice();
+        } else {
+          newKeymap = layer < state.keymap.default.length ? state.keymap.default.slice() : state.keymap.custom.slice();
+          newKeymap[state.currentLayer] =
+            layer < state.keymap.default.length
+              ? state.keymap.default[layer].slice()
+              : state.keymap.custom[layer - state.keymap.default.length].slice();
+        }
       } else {
-        newKeymap = layer < state.keymap.default.length ? state.keymap.default.slice() : state.keymap.custom.slice();
-        newKeymap[state.currentLayer] =
-          layer < state.keymap.default.length
-            ? state.keymap.default[layer].slice()
-            : state.keymap.custom[layer - state.keymap.default.length].slice();
+        newKeymap = null;
       }
       newColormap = state.colorMap.slice();
       if (newColormap.length > 0)
@@ -806,7 +810,7 @@ class LayoutEditor extends React.Component {
         keymap: {
           default: state.keymap.default,
           onlyCustom: state.keymap.onlyCustom,
-          custom: newKeymap
+          custom: newKeymap == null ? state.keymap.custom : newKeymap
         },
         copyFromOpen: false,
         modified: true
